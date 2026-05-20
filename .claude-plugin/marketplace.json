@@ -1,0 +1,12 @@
+{
+  "name": "sjovy",
+  "owner": { "name": "Thomas Sjovy" },
+  "description": "Thomas's personal Claude Code plugin marketplace.",
+  "plugins": [
+    {
+      "name": "mattpocock-skills",
+      "source": { "source": "github", "repo": "sjovy/mattpocock-skills", "ref": "main" },
+      "description": "Matt Pocock's skills collection (forked to sjovy/mattpocock-skills)."
+    }
+  ]
+}
