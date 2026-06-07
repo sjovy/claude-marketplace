@@ -8,5 +8,10 @@
       "source": { "source": "github", "repo": "sjovy/mattpocock-skills", "ref": "main" },
       "description": "Matt Pocock's skills collection (forked to sjovy/mattpocock-skills)."
     }
+    {
+      "name": "impeccable",
+      "source": { "source": "github", "repo": "sjovy/pbakaus-impeccable", "ref": "main" },
+      "description": "Design vocabulary and curated anti-patterns, based on Frontend-design."
+    }
   ]
 }
