@@ -12,6 +12,11 @@
       "name": "impeccable",
       "source": { "source": "github", "repo": "sjovy/pbakaus-impeccable", "ref": "main" },
       "description": "Design vocabulary and curated anti-patterns, based on Frontend-design."
+    },
+    {
+      "name": "ponytail",
+      "source": { "source": "github", "repo": "sjovy/dietrichgebert-ponytail", "ref": "main" },
+      "description": "The laziest senior dev in the room. The best code is the code you never wrote."
     }
   ]
 }
