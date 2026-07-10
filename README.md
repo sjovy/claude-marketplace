@@ -45,14 +45,6 @@ Then install any plugin it lists:
 
 ---
 
-## Plugins
-
-| Plugin | My fork | Upstream | Type | Notes |
-|---|---|---|---|---|
-| `mattpocock-skills` | [`sjovy/mattpocock-skills`](https://github.com/sjovy/mattpocock-skills) | [`mattpocock/skills`](https://github.com/mattpocock/skills) | skills only | Inert markdown — low risk. |
-
----
-
 ## Updating an installed plugin
 
 1. **On GitHub** — open the fork, **review the incoming upstream changes**, then click **"Sync fork"**. *(This is the security checkpoint — see Warnings.)*
