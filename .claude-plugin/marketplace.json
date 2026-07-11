@@ -19,6 +19,11 @@
       "description": "Design skills that stopping Claude from generating generic frontends."
     },
     {
+      "name": "awsome-design",
+      "source": { "source": "github", "repo": "sjovy/voltagent-awesome-design", "ref": "main" },
+      "description": "Copy a DESIGN.md and generate a UI with a consistent design language."
+    },
+    {
       "name": "ponytail",
       "source": { "source": "github", "repo": "sjovy/dietrichgebert-ponytail", "ref": "main" },
       "description": "The laziest senior dev in the room. The best code is the code you never wrote."
