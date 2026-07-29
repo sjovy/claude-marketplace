@@ -1,0 +1,179 @@
+name: Sync forks with upstream
+
+# Keeps every fork in the account fast-forwarded to its upstream, so the plugins
+# referenced from .claude-plugin/marketplace.json always resolve to current code.
+#
+# Requires a repository secret named FORK_SYNC_TOKEN:
+#   fine-grained PAT, repository access = All repositories,
+#   permissions = Contents: Read and write, Issues: Read and write, Metadata: Read.
+# The built-in GITHUB_TOKEN cannot be used: it is scoped to this repository only.
+
+on:
+  schedule:
+    # 04:00 UTC = 06:00 CEST (summer) / 05:00 CET (winter). Cron in Actions is always UTC.
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-forks
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out marketplace repo
+        uses: actions/checkout@v4
+
+      - name: Sync forks
+        env:
+          GH_TOKEN: ${{ secrets.FORK_SYNC_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          MARKETPLACE_FILE: .claude-plugin/marketplace.json
+        run: |
+          set -euo pipefail
+
+          tmp="$(mktemp -d)"
+          report="$tmp/report.md"
+          rows="$tmp/rows.md"
+          : > "$rows"
+          changed=0
+          problems=0
+
+          # ---------------------------------------------------------------
+          # Which forks does the marketplace actually depend on?
+          # Used only to decide where a stale plugin.json version matters.
+          # ---------------------------------------------------------------
+          if [ -f "$MARKETPLACE_FILE" ]; then
+            jq -r --arg owner "$OWNER" '
+              .plugins[]?
+              | .source
+              | if type == "object" then (.repo // empty) else empty end
+              | select(startswith($owner + "/"))
+              | sub("^.*/"; "")
+            ' "$MARKETPLACE_FILE" | sort -u > "$tmp/marketplace-repos.txt"
+          else
+            : > "$tmp/marketplace-repos.txt"
+          fi
+          echo "Marketplace-referenced forks: $(tr '\n' ' ' < "$tmp/marketplace-repos.txt")"
+
+          # ---------------------------------------------------------------
+          # Enumerate every non-archived fork owned by the account.
+          # ---------------------------------------------------------------
+          gh api --paginate "/user/repos?per_page=100&affiliation=owner" \
+            --jq '.[] | select(.fork == true) | select(.archived != true) | [.name, .default_branch] | @tsv' \
+            | sort > "$tmp/forks.tsv"
+
+          fork_count=$(wc -l < "$tmp/forks.tsv" | tr -d ' ')
+          echo "Found $fork_count fork(s) to process."
+          if [ "$fork_count" = "0" ]; then
+            echo "No forks found. Check that FORK_SYNC_TOKEN can see the account's repositories." >&2
+            exit 1
+          fi
+
+          # Read .claude-plugin/plugin.json version at a given ref (empty if absent).
+          version_at() {
+            local repo="$1" ref="$2"
+            gh api "/repos/$OWNER/$repo/contents/.claude-plugin/plugin.json?ref=$ref" \
+              --jq '.content' 2>/dev/null \
+              | tr -d '\n' | base64 -d 2>/dev/null \
+              | jq -r '.version // empty' 2>/dev/null || true
+          }
+
+          while IFS=$'\t' read -r repo branch; do
+            [ -n "${repo:-}" ] || continue
+            echo "::group::$repo ($branch)"
+
+            parent=$(gh api "/repos/$OWNER/$repo" --jq '.parent.full_name // empty' 2>/dev/null || true)
+            if [ -z "$parent" ]; then
+              printf '| `%s` | – | ⚠️ no upstream parent found | |\n' "$repo" >> "$rows"
+              problems=$((problems + 1))
+              echo "::endgroup::"
+              continue
+            fi
+
+            before=$(gh api "/repos/$OWNER/$repo/commits/$branch" --jq '.sha' 2>/dev/null || true)
+
+            if err=$(gh api --method POST "/repos/$OWNER/$repo/merge-upstream" \
+                       -f "branch=$branch" 2>&1 >"$tmp/out.json"); then
+              :
+            else
+              err_text="$err"
+              if printf '%s' "$err_text" | grep -q 'HTTP 409'; then
+                printf '| `%s` | `%s` | ❌ diverged – manual merge needed | |\n' "$repo" "$parent" >> "$rows"
+              else
+                one_line=$(printf '%s' "$err_text" | tr '\n' ' ' | cut -c1-160)
+                printf '| `%s` | `%s` | ❌ sync failed: %s | |\n' "$repo" "$parent" "$one_line" >> "$rows"
+              fi
+              problems=$((problems + 1))
+              echo "::endgroup::"
+              continue
+            fi
+
+            after=$(gh api "/repos/$OWNER/$repo/commits/$branch" --jq '.sha' 2>/dev/null || true)
+
+            if [ -z "$before" ] || [ -z "$after" ] || [ "$before" = "$after" ]; then
+              printf '| `%s` | `%s` | ✅ already current | |\n' "$repo" "$parent" >> "$rows"
+              echo "::endgroup::"
+              continue
+            fi
+
+            changed=$((changed + 1))
+            ahead=$(gh api "/repos/$OWNER/$repo/compare/$before...$after" --jq '.total_commits // empty' 2>/dev/null || true)
+            [ -n "$ahead" ] || ahead="?"
+
+            note=""
+            if grep -qx "$repo" "$tmp/marketplace-repos.txt"; then
+              v_before=$(version_at "$repo" "$before")
+              v_after=$(version_at "$repo" "$after")
+              if [ -n "$v_after" ] && [ "$v_before" = "$v_after" ]; then
+                note="⚠️ \`plugin.json\` version still \`$v_after\` — Claude Code will keep the cached copy; force a reinstall"
+                problems=$((problems + 1))
+              elif [ -n "$v_after" ]; then
+                note="version \`${v_before:-none}\` → \`$v_after\`"
+              fi
+            fi
+
+            printf '| `%s` | `%s` | ⬆️ synced, %s new commit(s) | %s |\n' \
+              "$repo" "$parent" "$ahead" "$note" >> "$rows"
+            echo "::endgroup::"
+          done < "$tmp/forks.tsv"
+
+          # ---------------------------------------------------------------
+          # Report
+          # ---------------------------------------------------------------
+          {
+            echo "## Fork sync — $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo
+            echo "Run: [\`${GITHUB_RUN_ID:-local}\`](${GITHUB_SERVER_URL:-https://github.com}/${GH_REPO}/actions/runs/${GITHUB_RUN_ID:-})"
+            echo
+            echo "| Fork | Upstream | Result | Notes |"
+            echo "| --- | --- | --- | --- |"
+            cat "$rows"
+            echo
+            echo "**$changed fork(s) updated, $problems item(s) needing attention.**"
+            if [ "$changed" -gt 0 ]; then
+              echo
+              echo "On your machine, refresh with \`/plugin marketplace update\` then \`/plugin update\`."
+            fi
+          } > "$report"
+
+          cat "$report" >> "$GITHUB_STEP_SUMMARY"
+
+          # Only speak up when something actually happened.
+          if [ "$changed" -gt 0 ] || [ "$problems" -gt 0 ]; then
+            existing=$(gh issue list --state open --search 'Fork sync report in:title' \
+                        --limit 1 --json number --jq '.[0].number // empty' 2>/dev/null || true)
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body-file "$report"
+            else
+              gh issue create --title 'Fork sync report' --body-file "$report"
+            fi
+          else
+            echo "Nothing changed and nothing failed — staying quiet."
+          fi
