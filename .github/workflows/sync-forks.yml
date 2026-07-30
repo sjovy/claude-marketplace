@@ -145,6 +145,45 @@ jobs:
           done < "$tmp/forks.tsv"
 
           # ---------------------------------------------------------------
+          # Do all marketplace entries still resolve? Catches forks that were
+          # deleted or renamed while marketplace.json still points at them.
+          # ---------------------------------------------------------------
+          dangling="$tmp/dangling.md"
+          : > "$dangling"
+          entry_count=0
+
+          if [ -f "$MARKETPLACE_FILE" ]; then
+            jq -r --arg owner "$OWNER" '
+              .plugins[]?
+              | select((.source | type) == "object")
+              | select(((.source.repo // "") | startswith($owner + "/")))
+              | [ (.name // "?"), (.source.repo | sub("^.*/"; "")), (.source.ref // "") ]
+              | @tsv
+            ' "$MARKETPLACE_FILE" > "$tmp/entries.tsv"
+
+            while IFS=$'\t' read -r plugin repo ref; do
+              [ -n "${repo:-}" ] || continue
+              entry_count=$((entry_count + 1))
+
+              default_branch=$(gh api "/repos/$OWNER/$repo" --jq '.default_branch // empty' 2>/dev/null || true)
+              if [ -z "$default_branch" ]; then
+                printf '| `%s` | `%s/%s` | ❌ repository not found – renamed or deleted |\n' \
+                  "$plugin" "$OWNER" "$repo" >> "$dangling"
+                problems=$((problems + 1))
+                continue
+              fi
+
+              check_ref="$ref"
+              [ -n "$check_ref" ] || check_ref="$default_branch"
+              if ! gh api "/repos/$OWNER/$repo/commits/$check_ref" --jq '.sha' >/dev/null 2>&1; then
+                printf '| `%s` | `%s/%s` | ❌ ref `%s` does not resolve |\n' \
+                  "$plugin" "$OWNER" "$repo" "$check_ref" >> "$dangling"
+                problems=$((problems + 1))
+              fi
+            done < "$tmp/entries.tsv"
+          fi
+
+          # ---------------------------------------------------------------
           # Report
           # ---------------------------------------------------------------
           {
@@ -156,6 +195,19 @@ jobs:
             echo "| --- | --- | --- | --- |"
             cat "$rows"
             echo
+            if [ -s "$dangling" ]; then
+              echo "### Marketplace entries that no longer resolve"
+              echo
+              echo "| Plugin | Points at | Problem |"
+              echo "| --- | --- | --- |"
+              cat "$dangling"
+              echo
+              echo "Fix by editing \`$MARKETPLACE_FILE\` — correct the \`repo\`/\`ref\`, or remove the entry."
+              echo
+            else
+              echo "_All $entry_count marketplace entry(ies) pointing at this account resolve._"
+              echo
+            fi
             echo "**$changed fork(s) updated, $problems item(s) needing attention.**"
             if [ "$changed" -gt 0 ]; then
               echo
