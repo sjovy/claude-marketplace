@@ -16,7 +16,7 @@
     {
       "name": "taste-skills",
       "source": { "source": "github", "repo": "sjovy/leonxlnx-taste-skill", "ref": "main" },
-      "description": "Design skills that stopping Claude from generating generic frontends."
+      "description": "Agent Skills that upgrade AI-built interfaces: stronger layout, typography, motion, and spacing instead of boilerplate-looking UIs. Also includes image-generation skills for reference boards (web, mobile, brand kits). Start with taste-skill for the safest general default. Use gpt-taste when you want the stricter GPT/Codex-oriented rules and motion/layout enforcement. Use image-to-code-skill for image → analyze → code website workflows. Use redesign-skill to improve an existing codebase instead of greenfield styling. Add soft-skill, minimalist-skill, or brutalist-skill when the visual direction is already chosen. Add output-skill if the agent keeps truncating output. Attach or paste imagegen-frontend-web, imagegen-frontend-mobile, or brandkit and ask for the frames you need, then feed the renders to Codex, Cursor, or Claude Code. Use image-to-code-skill when you want one workflow that both generates references and implements the site in code."
     },
     {
       "name": "awsome-design",
