@@ -7,7 +7,6 @@
       "name": "mattpocock-skills",
       "source": { "source": "github", "repo": "sjovy/mattpocock-skills", "ref": "main" },
       "description": "Engineering (manual)
-
 ask-matt: skill router
 grill-with-docs: grill + domain docs
 triage: issues through triage roles
@@ -17,9 +16,7 @@ to-spec: conversation → spec
 to-tickets: plan → linked tickets
 implement: build spec via tdd + review
 wayfinder: map huge work as tickets
-
 Engineering (auto)
-
 prototype: throwaway app for design Qs
 diagnosing-bugs: reproduce → fix → test
 research: cited findings, primary sources
@@ -28,16 +25,12 @@ domain-modeling: sharpen terms + docs
 codebase-design: deep modules, small APIs
 code-review: parallel standards + spec
 resolving-merge-conflicts: by hunk, by intent
-
 Productivity (manual)
-
 grill-me: relentless plan interview
 handoff: compact convo for next agent
 teach: multi-session lessons
 writing-great-skills: how to write skills
-
 Productivity (auto)
-
 grilling: the reusable interview loop"
     },
     {
