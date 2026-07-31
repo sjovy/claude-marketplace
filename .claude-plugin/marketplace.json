@@ -21,7 +21,7 @@
     {
       "name": "awsome-design",
       "source": { "source": "github", "repo": "sjovy/voltagent-awesome-design", "ref": "main" },
-      "description": "Copy a DESIGN.md and generate a UI with a consistent design language."
+      "description": "A plain-text design system document that AI agents read to generate consistent UI. It's just a markdown file. Drop it into your project root and any AI coding agent or Google Stitch instantly understands how your UI should look. Built with real design depth — including analyzed patterns, tokens, and rules — for high-quality UI generation, not surface-level outputs. Ready-to-use DESIGN.md files extracted from real websites: 1, Visual Theme & Atmosphere (mood, density, design philosophy) 2, Color Palette & Roles (semantic name + hex + functional role) 3, Typography Rules (font families, full hierarchy table) 4, Component Stylings (buttons, cards, inputs, navigation with states) 5, Layout Principles (spacing scale, grid, whitespace philosophy) 6, Depth & Elevation (shadow system, surface hierarchy) 7, Do's and Don'ts (design guardrails and anti-patterns) 8, Responsive Behavior (breakpoints, touch targets, collapsing strategy) 9, Agent Prompt Guide (quick color reference, ready-to-use prompts)"
     },
     {
       "name": "ponytail",
