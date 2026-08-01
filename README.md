@@ -8,18 +8,19 @@ One marketplace to track. Everything else is automatic once set up.
 
 ## How it works
 
-Updates flow through three stages. Two are automatic; the middle one is deliberately manual and acts as my review gate:
+Updates flow through three stages, all automatic:
 
 ```
 upstream author        my fork                 my machine
 (e.g. mattpocock)  ──▶ (sjovy/<repo>)      ──▶ (Claude Code)
-   they push       MANUAL: I review the      AUTO: marketplace
-                   diff, then "Sync fork"    auto-update + reload
+   they push       AUTO: sync-forks          AUTO: marketplace
+                   fast-forwards daily       auto-update + reload
 ```
 
-- **Fork = durable copy + security gate.** Nothing reaches my machine until I've looked at what changed upstream and chosen to pull it. If an author deletes or rewrites their repo, my fork survives, so I'm never stranded.
+- **Fork = durable copy.** If an author deletes, renames, or abandons their repo, my fork survives and the marketplace keeps resolving. And because syncing is **fast-forward-only**, a force-pushed/rewritten upstream history never flows in — the sync fails loudly ("diverged — manual merge needed") and waits for me.
 - **Marketplace = the catalog.** This repo's `.claude-plugin/marketplace.json` lists each plugin and points at my fork of it.
-- **Auto-update is ON** for this marketplace, so once I sync a fork, the change reaches Claude Code on its own.
+- **Sync is automated.** `.github/workflows/sync-forks.yml` runs daily (04:00 UTC) and fast-forwards every fork in the account to its upstream. It reports via a single **"Fork sync report" issue** in this repo — created/updated only when something changed or needs attention. Requires the `FORK_SYNC_TOKEN` repository secret (fine-grained PAT, all repos, Contents + Issues read/write).
+- **Auto-update is ON** for this marketplace, so synced changes reach Claude Code on their own at the next startup.
 
 ---
 
@@ -68,19 +69,18 @@ Then install any plugin it lists:
 
 ## Updating an installed plugin
 
-1. **On GitHub** — open the fork, **review the incoming upstream changes**, then click **"Sync fork"**. *(This is the security checkpoint — see Warnings.)*
-2. **In Claude Code** — at the next startup, auto-update pulls the new commit and prompts a reload. Run:
-   ```
-   /reload-plugins
-   ```
+Normally: **nothing to do.** The nightly sync fast-forwards the fork, auto-update pulls it down at the next Claude Code startup, and a reload prompt appears — run:
+```
+/reload-plugins
+```
 
-**To update immediately** without restarting:
+**To update immediately** (without waiting for the nightly sync): click **"Sync fork"** on the fork (or trigger the sync workflow manually), then:
 ```
 /plugin marketplace update sjovy
 /reload-plugins
 ```
 
-No reinstall is needed in normal use — auto-update + reload is the whole flow.
+**To know what changed:** watch the **"Fork sync report" issue** in this repo — it lists every synced fork, commit counts, and anything needing attention (diverged forks, stale `plugin.json` versions, dangling marketplace entries).
 
 ---
 
@@ -123,21 +123,20 @@ No reinstall is needed in normal use — auto-update + reload is the whole flow.
 ## ⚠️ Warnings & caveats
 
 - **Plugins execute with your user privileges.** No sandbox. Anthropic does not review third-party plugins. Only fork and add sources you trust.
-- **The fork only protects you if you actually review the diff** before clicking "Sync fork." The button will happily fast-forward whatever upstream pushed. Pay closest attention to anything touching `hooks/`, `.mcp.json`, or executable scripts.
-  - **Skills** = inert markdown instructions → low risk, quick scan.
-  - **Hooks / MCP servers** = code that runs on your machine → review hard.
-- **Auto-update is per-marketplace, not per-plugin.** Every plugin added here inherits auto-update = ON. To freeze one plugin while the rest auto-update, pin its source to an exact commit:
+- **Trust is decided once, at adoption time — not per update.** With sync and auto-update both automatic, new upstream commits reach my machine with **no review step**. The fork protects availability (deletion, renames) and blocks history rewrites (fast-forward-only), but it does *not* screen what a trusted author pushes next. Adopt accordingly — be strictest about plugins containing `hooks/`, `.mcp.json`, or executable scripts (code that runs on my machine), relaxed about pure-markdown skills.
+- **To put a specific plugin behind a review gate, pin it to a commit:**
   ```json
   "source": { "source": "github", "repo": "sjovy/<repo>", "sha": "<40-char commit>" }
   ```
-- **Forks go stale silently.** A fork never auto-pulls upstream — it only moves when I click "Sync fork." This is the accepted cost of the security gate; the trade-off is that I must remember to sync to receive updates and fixes.
+  A pinned plugin never moves until I deliberately edit this file — that edit *is* the review. Use for anything whose upstream I trust less than the rest.
+- **Diverged forks stop syncing.** If an upstream force-pushes, the nightly sync refuses the rewrite and flags the fork in the report issue ("diverged — manual merge needed"). That's the moment to look hard at what upstream did before resolving by hand.
 
 ---
 
 ## Design decisions (why it's built this way)
 
-- **Forks over pointing at upstream** — chosen for **resilience**. If an author deletes, force-pushes, or abandons their repo, a direct upstream reference breaks and I can't even reinstall. My fork is an independent copy that survives. The accepted cost is manual syncing, which doubles as the malware-review gate.
-- **Auto-update ON** — once a fork is reviewed and synced, propagation to my machine should be hands-off.
-- **No declarative `settings.json`, no auto-sync automation** — deliberately kept simple; manual fork-sync is the one manual step I accept in exchange for control.
+- **Forks over pointing at upstream** — chosen for **resilience**. If an author deletes, force-pushes, or abandons their repo, a direct upstream reference breaks and I can't even reinstall. My fork is an independent copy that survives, and fast-forward-only syncing rejects rewritten history on top.
+- **Full automation over a per-update review gate** — the accepted trade-off. I trust the authors I adopt, continuously; in exchange, updates flow hands-off from their push to my machine. Where that trust is thinner, per-plugin SHA pinning restores a deliberate review step — per plugin, not as friction on everything.
+- **One report channel** — the sync workflow speaks only through the "Fork sync report" issue, and only when something changed or broke. Silence means healthy.
 
 Every entry is a one-line edit, so any plugin can be switched between fork ↔ upstream, or pinned to a SHA, at any time.
