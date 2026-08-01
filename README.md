@@ -23,6 +23,27 @@ upstream author        my fork                 my machine
 
 ---
 
+## Preparing a fork (do this at fork time, before anything else)
+
+Forked repos inherit the upstream's GitHub Actions workflows. Every sync push
+triggers them in **your** fork, where they fail without the upstream's secrets
+— and GitHub emails "Run failed" every morning the upstream moved. The moment
+you create a fork, while you still remember why:
+
+1. **Fork** the upstream to `sjovy/<author>-<repo>`.
+2. **Disable GitHub Actions on the fork**: Settings → Actions → General →
+   **"Disable actions"** → Save. Or from the CLI:
+   ```bash
+   gh api -X PUT /repos/sjovy/<repo>/actions/permissions -F enabled=false
+   ```
+3. Continue with **Adding a new trusted plugin** below if it's marketplace-bound.
+
+This applies to *every* fork in the account, marketplace-bound or not — any
+fork with inherited CI will spam on its next sync. (All forks existing before
+2026-08-01 have been bulk-disabled already.)
+
+---
+
 ## Install (one time, per machine)
 
 ```
