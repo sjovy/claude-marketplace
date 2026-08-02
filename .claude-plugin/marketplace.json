@@ -26,6 +26,11 @@
       "name": "ponytail",
       "source": { "source": "github", "repo": "sjovy/dietrichgebert-ponytail", "ref": "main" },
       "description": "Writes only what the task needs, and never cuts validation, error handling, security, or accessibility. Before writing code, the ladder runs after it understands the problem: 1, Does this need to exist? 2, Already in this codebase? 3, Stdlib does it? 4, Native platform feature? 5, Installed dependency? 6, One line? 7, Only then: the minimum that works. Commands: /ponytail [lite | full | ultra | off] Set the intensity, or turn it off. No argument reports the current level. /ponytail-review Review the current diff for over-engineering, hands back a delete-list. /ponytail-audit Audit the whole repo for over-engineering, not just the diff. /ponytail-debt Harvest the ponytail (shortcuts you've deferred into a ledger, so later doesn't become never). /ponytail-gain Show the measured impact scoreboard (less code, less cost, more speed) from the benchmark."
+    },
+    {
+      "name": "caveman",
+      "source": { "source": "github", "repo": "sjovy/juliusbrussee-caveman", "ref": "main" },
+      "description": "Caveman no make brain smaller. Caveman make mouth smaller. Shrinks what the agent says, not what it knows. Agent drops the filler and answers in tight caveman-speak, keeping code, commands, and errors byte-for-byte exact. You save output tokens on every reply, forever."
     }
   ]
 }
