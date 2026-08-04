@@ -35,7 +35,7 @@
     {
       "name": "higgsfield",
       "source": { "source": "github", "repo": "sjovy/higgsfield-ai-cli", "ref": "main" },
-      "description": "Graphics and design, all in one place."
+      "description": "Graphics and design, all in one place. Use together with Impeccable for additional features."
     }
   ]
 }
