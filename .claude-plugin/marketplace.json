@@ -35,7 +35,12 @@
     {
       "name": "higgsfield",
       "source": { "source": "github", "repo": "sjovy/higgsfield-ai-cli", "ref": "main" },
-      "description": "Graphics and design, all in one place. Use together with Impeccable for additional features."
+      "description": "Graphics and design, all in one place. Use together with Impeccable for additional features. Needs a funded account."
+    },
+    {
+      "name": "gws-CLI",
+      "source": { "source": "github", "repo": "sjovy/googleworkspace-cli", "ref": "main" },
+      "description": "A one command-line tool for Drive, Gmail, Calendar, Sheets, Docs, Chat, Admin, and more. Reads Google's own Discovery Service at runtime and builds its entire command surface dynamically. When Google Workspace adds an API endpoint or method, gws picks it up automatically."
     }
   ]
 }
