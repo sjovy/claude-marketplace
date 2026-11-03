@@ -39,6 +39,11 @@
       "description": "Graphics and design, all in one place. Use together with Impeccable for additional features. Needs a funded account."
     },
     {
+      "name": "video-vision",
+      "source": { "source": "github", "repo": "sjovy/jordanrendric-video-vision", "ref": "main" },
+      "description": "Extracts frames via ffmpeg and processes audio via multiple backends (Gemini API, local Whisper, or OpenAI API). Claude receives frames as images and audio transcription with timestamps — the plugin is a perception layer, not an interpretation layer. Multimodal perception — Claude sees video frames directly and reads audio transcriptions with timestamps. YouTube URL support — Pass a YouTube URL directly; the MCP server downloads it with yt-dlp, preserving source metadata and captions for context. Flexible backends — Choose between cloud APIs or fully local processing. Adaptive extraction — Claude adjusts fps, time range, and resolution based on your question. Auto-installation — Whisper models download automatically on first use. Interactive setup wizard — /setup-video-vision walks you through configuration."
+    },
+    {
       "name": "gws-CLI",
       "source": { "source": "github", "repo": "sjovy/googleworkspace-cli", "ref": "main" },
       "description": "A one command-line tool for Drive, Gmail, Calendar, Sheets, Docs, Chat, Admin, and more. Reads Google's own Discovery Service at runtime and builds its entire command surface dynamically. When Google Workspace adds an API endpoint or method, gws picks it up automatically."
