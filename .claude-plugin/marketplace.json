@@ -1,52 +1,95 @@
 {
   "name": "sjovy",
-  "owner": { "name": "Thomas Sjovy" },
+  "owner": {
+    "name": "Thomas Sjovy"
+  },
   "description": "Thomas's personal Claude Code plugin marketplace.",
   "plugins": [
     {
       "name": "impeccable",
-      "source": { "source": "github", "repo": "sjovy/pbakaus-impeccable", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/pbakaus-impeccable",
+        "ref": "main"
+      },
       "description": "Design-quality system for frontend work: a shared vocabulary of 23 commands for iterating on UI (polish, audit, critique, distill, animate, bolder, quieter, and more), backed by 59 deterministic detector rules plus LLM-only critique checks. Enable when a session builds or restyles user-facing UI and appearance matters; skip for backend, CLI, or logic-only work. One-time setup per repo: npx impeccable install, then /impeccable init — writes PRODUCT.md (audience, brand lane, voice, anti-references) and optionally DESIGN.md (colors, type, components), so every later command knows the product's identity instead of styling blind. Enforced guardrails: no overused fonts (Arial, Inter, system defaults), no gray text on colored backgrounds, no pure black or gray (always tint), don't wrap everything in cards or nest cards, no bounce/elastic easing (dated). The detector rules run deterministically via CLI or browser extension — no LLM or API key needed. Full docs: impeccable.style."
     },
     {
       "name": "taste-skills",
-      "source": { "source": "github", "repo": "sjovy/leonxlnx-taste-skill", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/leonxlnx-taste-skill",
+        "ref": "main"
+      },
       "description": "Agent Skills that upgrade AI-built interfaces: stronger layout, typography, motion, and spacing instead of boilerplate-looking UIs. Also includes image-generation skills for reference boards (web, mobile, brand kits). Start with taste-skill for the safest general default. Use gpt-taste when you want the stricter GPT/Codex-oriented rules and motion/layout enforcement. Use image-to-code-skill for image → analyze → code website workflows. Use redesign-skill to improve an existing codebase instead of greenfield styling. Add soft-skill, minimalist-skill, or brutalist-skill when the visual direction is already chosen. Add output-skill if the agent keeps truncating output. Attach or paste imagegen-frontend-web, imagegen-frontend-mobile, or brandkit and ask for the frames you need, then feed the renders to Codex, Cursor, or Claude Code. Use image-to-code-skill when you want one workflow that both generates references and implements the site in code."
     },
     {
       "name": "awsome-design",
-      "source": { "source": "github", "repo": "sjovy/voltagent-awesome-design", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/voltagent-awesome-design",
+        "ref": "main"
+      },
       "description": "A plain-text design system document that AI agents read to generate consistent UI. It's just a markdown file. Drop it into your project root and any AI coding agent or Google Stitch instantly understands how your UI should look. Built with real design depth — including analyzed patterns, tokens, and rules — for high-quality UI generation, not surface-level outputs. Ready-to-use DESIGN.md files extracted from real websites: 1, Visual Theme & Atmosphere (mood, density, design philosophy) 2, Color Palette & Roles (semantic name + hex + functional role) 3, Typography Rules (font families, full hierarchy table) 4, Component Stylings (buttons, cards, inputs, navigation with states) 5, Layout Principles (spacing scale, grid, whitespace philosophy) 6, Depth & Elevation (shadow system, surface hierarchy) 7, Do's and Don'ts (design guardrails and anti-patterns) 8, Responsive Behavior (breakpoints, touch targets, collapsing strategy) 9, Agent Prompt Guide (quick color reference, ready-to-use prompts)"
     },
     {
       "name": "ponytail",
-      "source": { "source": "github", "repo": "sjovy/dietrichgebert-ponytail", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/dietrichgebert-ponytail",
+        "ref": "main"
+      },
       "description": "Writes only what the task needs, and never cuts validation, error handling, security, or accessibility. Before writing code, the ladder runs after it understands the problem: 1, Does this need to exist? 2, Already in this codebase? 3, Stdlib does it? 4, Native platform feature? 5, Installed dependency? 6, One line? 7, Only then: the minimum that works. Commands: /ponytail [lite | full | ultra | off] Set the intensity, or turn it off. No argument reports the current level. /ponytail-review Review the current diff for over-engineering, hands back a delete-list. /ponytail-audit Audit the whole repo for over-engineering, not just the diff. /ponytail-debt Harvest the ponytail (shortcuts you've deferred into a ledger, so later doesn't become never). /ponytail-gain Show the measured impact scoreboard (less code, less cost, more speed) from the benchmark."
     },
     {
       "name": "agent-skills",
-      "source": { "source": "github", "repo": "sjovy/addyosmani-agentskills", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/addyosmani-agentskills",
+        "ref": "main"
+      },
       "description": "Skills encoding workflows, quality gates, and best practices senior engineers use when building software.Slash commands that activates the right skills automatically: Define what to build, Plan how to build it, Build incrementally, Prove it works, Set the quality bar, Review before merge, Audit web performance, Simplify the code, Ship to production."
     },
     {
       "name": "caveman",
-      "source": { "source": "github", "repo": "sjovy/juliusbrussee-caveman", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/juliusbrussee-caveman",
+        "ref": "main"
+      },
       "description": "Caveman no make brain smaller. Caveman make mouth smaller. Shrinks what the agent says, not what it knows. Agent drops the filler and answers in tight caveman-speak, keeping code, commands, and errors byte-for-byte exact. You save output tokens on every reply, forever."
     },
     {
       "name": "higgsfield",
-      "source": { "source": "github", "repo": "sjovy/higgsfield-ai-cli", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/higgsfield-ai-cli",
+        "ref": "main"
+      },
       "description": "Graphics and design, all in one place. Use together with Impeccable for additional features. Needs a funded account."
     },
     {
       "name": "video-vision",
-      "source": { "source": "github", "repo": "sjovy/jordanrendric-video-vision", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/jordanrendric-video-vision",
+        "ref": "main"
+      },
       "description": "Extracts frames via ffmpeg and processes audio via multiple backends (Gemini API, local Whisper, or OpenAI API). Claude receives frames as images and audio transcription with timestamps — the plugin is a perception layer, not an interpretation layer. Multimodal perception — Claude sees video frames directly and reads audio transcriptions with timestamps. YouTube URL support — Pass a YouTube URL directly; the MCP server downloads it with yt-dlp, preserving source metadata and captions for context. Flexible backends — Choose between cloud APIs or fully local processing. Adaptive extraction — Claude adjusts fps, time range, and resolution based on your question. Auto-installation — Whisper models download automatically on first use. Interactive setup wizard — /setup-video-vision walks you through configuration."
     },
     {
       "name": "gws-CLI",
-      "source": { "source": "github", "repo": "sjovy/googleworkspace-cli", "ref": "main" },
+      "source": {
+        "source": "github",
+        "repo": "sjovy/googleworkspace-cli",
+        "ref": "main"
+      },
       "description": "A one command-line tool for Drive, Gmail, Calendar, Sheets, Docs, Chat, Admin, and more. Reads Google's own Discovery Service at runtime and builds its entire command surface dynamically. When Google Workspace adds an API endpoint or method, gws picks it up automatically."
+    },
+    {
+      "name": "cache-varm",
+      "source": "./plugins/cache-varm",
+      "description": "Visar kontextförbrukning och om promptcachen är varm, med nedräkning mot cachens TTL, så att du undviker onödiga cache-missar."
     }
   ]
 }

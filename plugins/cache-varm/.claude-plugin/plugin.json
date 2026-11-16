@@ -1,0 +1,18 @@
+{
+  "name": "cache-varm",
+  "version": "0.1.0",
+  "description": "Visar kontextförbrukning och om promptcachen är varm, med nedräkning mot cachens TTL.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "ttlMinutes": {
+      "type": "number",
+      "title": "Cache-TTL i minuter",
+      "description": "Hur länge promptcachen lever efter senaste anrop. 5 är standard, 60 med 1-timmescache.",
+      "default": 5
+    }
+  },
+  "author": {
+    "name": "Thomas Sjovy"
+  },
+  "license": "MIT"
+}
